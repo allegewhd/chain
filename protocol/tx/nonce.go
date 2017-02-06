@@ -13,8 +13,6 @@ type nonce struct {
 func (nonce) Type() string         { return "nonce1" }
 func (n *nonce) Body() interface{} { return n.body }
 
-func (nonce) Ordinal() int { return -1 }
-
 func newNonce(p bc.Program, trRef bc.Hash) *nonce {
 	n := new(nonce)
 	n.body.Program = p

@@ -4,18 +4,18 @@ import "chain/protocol/bc"
 
 type nonce struct {
 	body struct {
-		Program      bc.Program
-		TimeRangeRef bc.Hash
-		ExtHash      extHash
+		Program   bc.Program
+		TimeRange EntryRef
+		ExtHash   extHash
 	}
 }
 
 func (nonce) Type() string         { return "nonce1" }
 func (n *nonce) Body() interface{} { return n.body }
 
-func newNonce(p bc.Program, trRef bc.Hash) *nonce {
+func newNonce(p bc.Program, tr EntryRef) *nonce {
 	n := new(nonce)
 	n.body.Program = p
-	n.body.TimeRangeRef = trRef
+	n.body.TimeRange = tr
 	return n
 }

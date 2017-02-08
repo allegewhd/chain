@@ -1,6 +1,7 @@
 package com.chain.http;
 
 import com.chain.exception.*;
+import com.chain.common.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +36,6 @@ public class Client {
   private String accessToken;
   private OkHttpClient httpClient;
   private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-  private static final Gson serializer = new Gson();
   private static String version = "dev"; // updated in the static initializer
 
   private static class BuildProperties {
@@ -46,7 +46,7 @@ public class Client {
     InputStream in = Client.class.getClassLoader().getResourceAsStream("properties.json");
     if (in != null) {
       InputStreamReader inr = new InputStreamReader(in);
-      version = serializer.fromJson(inr, BuildProperties.class).version;
+      version = Utils.serializer.fromJson(inr, BuildProperties.class).version;
     }
   }
 
@@ -286,7 +286,7 @@ public class Client {
    */
   private <T> T post(String path, Object body, ResponseCreator<T> respCreator)
       throws ChainException {
-    RequestBody requestBody = RequestBody.create(this.JSON, serializer.toJson(body));
+    RequestBody requestBody = RequestBody.create(this.JSON, Utils.serializer.toJson(body));
     Request req;
 
     try {
@@ -316,7 +316,7 @@ public class Client {
 
       try {
         Response resp = this.checkError(this.httpClient.newCall(req).execute());
-        return respCreator.create(resp, serializer);
+        return respCreator.create(resp, Utils.serializer);
       } catch (IOException ex) {
         // The OkHttp library already performs retries for most
         // I/O-related errors. We can add retries here too if this
@@ -401,7 +401,7 @@ public class Client {
 
     if ((response.code() / 100) != 2) {
       try {
-        APIException err = serializer.fromJson(response.body().charStream(), APIException.class);
+        APIException err = Utils.serializer.fromJson(response.body().charStream(), APIException.class);
         if (err.code != null) {
           err.requestId = rid;
           err.statusCode = response.code();
